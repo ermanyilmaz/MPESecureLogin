@@ -83,7 +83,7 @@ function displaySoldierList($mysq) {
         echo "<td> <img src='ranks/$rankimg.png' /> " . $row['Rank'] . "  </td>";
         //echo "<img src='$content' />";
 
-        echo "<td><a href='soldier.php?delete=" . $row['id'] . "'>X</a> - <a href='mission.php?edit=" . $row['id'] . "'>M</a></td>";
+        echo "<td><a href='soldier.php?delete=" . $row['id'] . "'><button type='button' class='btn btn-danger btn-xs'>Delete</button> </a> - <a href='mission.php?edit=" . $row['id'] . "'>  <button type='button' class='btn btn-warning btn-xs'>Update</button></a></td>";
         echo '</tr>';
 
         $t++;
@@ -138,7 +138,7 @@ function displayMissionList($mysq) {
         echo "<td>" . $row['time'] . "  </td>";
         echo "<td>" . $row['details'] . "  </td>";
 
-        echo "<td><a href='soldier.php?delete=" . $row['id'] . "'>X</a> - <a href='mission.php?edit=" . $row['id'] . "'>M</a></td>";
+        echo "<td><a href='mission.php?delete=" . $row['id'] . "'><button type='button' class='btn btn-danger btn-xs'>Delete</button></a> - <a href='mission.php?edit=" . $row['id'] . "'><button type='button' class='btn btn-warning btn-xs'>Update</button></a></td>";
         echo '</tr>';
 
         $t++;
