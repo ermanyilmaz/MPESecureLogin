@@ -117,7 +117,7 @@ sec_session_start();
 
                             <table class="table table-hover table-condensed">
                                 <?php
-                                displaytable($mysqli, "mission");
+                                displayMissionList($mysqli);
                                 ?>
 
              
