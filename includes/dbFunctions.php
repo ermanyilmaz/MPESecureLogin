@@ -36,7 +36,7 @@ function displaytable($mysq, $tableName) {
             echo"<tr class=\"warning\">";
         }
         while ($i < sizeof($array)) {
-            echo "<td>" .$row[$array[$i]] . "</td>";
+            echo "<td>" . $row[$array[$i]] . "</td>";
             $i++;
         }
         echo "<td><a href='" . $tableName . ".php?delete=" . $row['id'] . "'>X</a> - <a href='" . $tableName . ".php?edit=" . $row['id'] . "'>M</a></td>";
@@ -46,7 +46,6 @@ function displaytable($mysq, $tableName) {
     }
     echo '</tbody>';
 }
-
 
 function displaySoldierList($mysq) {
 
@@ -79,8 +78,8 @@ function displaySoldierList($mysq) {
         } else {
             echo"<tr class=\"warning\">";
         }
-        $rankimg=$row['Rank'] ;
-        echo "<td>" . $row['SoldierName'] ."  </td>";
+        $rankimg = $row['Rank'];
+        echo "<td>" . $row['SoldierName'] . "  </td>";
         echo "<td> <img src='ranks/$rankimg.png' /> " . $row['Rank'] . "  </td>";
         //echo "<img src='$content' />";
 
@@ -92,9 +91,59 @@ function displaySoldierList($mysq) {
     echo '</tbody>';
 }
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+function displayMissionList($mysq) {
+
+    $query1 = "select mission.id as id,mission.name as MissionName,soldier.name as 
+        Leader, team.name as TeamName, mission.latitude as latitude,longitude as longitude, mission.time as time ,mission.details as details from mission,team,soldier where mission.teamID = team.id and soldier.id = team.leaderID";
+    $tableRows = $mysq->query($query1);
+
+
+    if (!$tableRows) {
+        echo 'There is a problem in your query my friend!';
+    } else {
+
+        echo '<thead><tr>';
+
+        echo ' <th>Mission Name</th>'
+        . '<th> Leader Name </th>';
+        echo ' <th>Team Name</th>';
+        echo ' <th>Latitude</th>';
+        echo ' <th>Longitude</th>';
+        echo ' <th>Time Created</th>';
+        echo '<th> Mission Details </th>';
+        echo '<th> Mission Functions </th>';
+
+        echo '</tr></thead>';
+
+
+
+
+        //Editas
+    }
+    echo '<tbody>';
+    $t = 0;
+    while ($row = $tableRows->fetch_assoc()) {
+        if ($t % 2) {
+            echo "<tr class=\"success\">";
+        } else {
+            echo"<tr class=\"warning\">";
+        }
+       
+        echo "<td>" . $row['MissionName'] . "  </td>";
+        echo "<td>" . $row['Leader'] . "  </td>";
+        echo "<td>" . $row['TeamName'] . "  </td>";
+        echo "<td>" . $row['latitude'] . "  </td>";
+        echo "<td>" . $row['longitude'] . "  </td>";
+        echo "<td>" . $row['longitude'] . "  </td>";
+        echo "<td>" . $row['time'] . "  </td>";
+        echo "<td>" . $row['details'] . "  </td>";
+
+        echo "<td><a href='soldier.php?delete=" . $row['id'] . "'>X</a> - <a href='mission.php?edit=" . $row['id'] . "'>M</a></td>";
+        echo '</tr>';
+
+        $t++;
+    }
+    echo '</tbody>';
+}
+
 ?>
