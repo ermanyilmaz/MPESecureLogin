@@ -195,11 +195,11 @@ while ($row = $result->fetch_assoc()) {
                                 <form>
                                     <div class="form-group">
                                         <label for="nm">Mission Name</label>
-                                        <input type="text" class="form-control" id="nm">
+                                        <input type="text" class="form-control" id="nm" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="sel1">Select a Team For the Mission</label>
-                                        <select class="form-control" id="teamid">
+                                        <select class="form-control" id="teamid" required >
                                             <?php
                                             $query1 = "select * from team";
                                             $tableRows = $mysqli->query($query1);
@@ -214,13 +214,13 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="form-group">
                                         <label for="pn">Mission Details</label>
-                                        <input type="text" class="form-control" id="pn">
+                                        <input type="text" class="form-control" id="pn" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="alL">Latitude</label>
-                                        <input type="text" class="form-control" id="mLat">
+                                        <input type="text" class="form-control" id="mLat" required>
                                         <label for="alLg">Longitude</label>
-                                        <input type="text" class="form-control" id="mLong">
+                                        <input type="text" class="form-control" id="mLong" required>
                                         <label for="alM">Select Location</label>
                                         <div id="Cmap" style="width: 100%; height: 300px"></div>
 
