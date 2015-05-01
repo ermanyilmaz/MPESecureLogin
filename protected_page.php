@@ -35,11 +35,39 @@ sec_session_start();
 
                 $("#misionCreatePop").on("shown.bs.modal", function () {
                     var currentCenter = mapC.getCenter();
-        
+
                     google.maps.event.trigger(mapC, "resize");
                     mapC.setCenter(currentCenter);
                 });
-                
+                //clicking the Create Mission Map
+                var marker;
+                //listener to drad
+
+                google.maps.event.addListener(mapC, "click", function (e) {
+
+                    //lat and lng is available in e object
+                    var latLng = e.latLng;
+
+                    document.getElementById("mLat").value = latLng.lat();
+                    document.getElementById("mLong").value = latLng.lng();
+                    if (marker) {
+                        marker.setPosition(latLng);
+                        google.maps.event.addListener(marker, 'dragend', function (event) {
+                            document.getElementById("mLat").value = this.getPosition().lat();
+                            document.getElementById("mLong").value = this.getPosition().lng();
+                        });
+                    }
+                    else {
+                        marker = new google.maps.Marker({
+                            map: mapC,
+                            position: latLng,
+                            draggable: true
+
+                        });
+                    }
+
+                });
+
 <?php
 // uncomment the 2 lines below to get real data from the db
 $sql = "SELECT * FROM mission";
@@ -93,7 +121,7 @@ while ($row = $result->fetch_assoc()) {
 
             }
             $('#misionCreatePop').on('show.bs.modal', function () {
-        $('.modal-content').css('height',$( window ).height()*0.8);
+                $('.modal-content').css('height', $(window).height() * 0.8);
             });
         </script>
     </head>
@@ -155,7 +183,7 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                 </div>
                 <!--                Create Button then after commings-->
-                <div class="modal fade" id="misionCreatePop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  >
+                <div class="modal fade " id="misionCreatePop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  >
                     <div class="modal-dialog">
                         <div class="modal-content" >
                             <div class="modal-header">
@@ -189,10 +217,14 @@ while ($row = $result->fetch_assoc()) {
                                         <input type="text" class="form-control" id="pn">
                                     </div>
                                     <div class="form-group">
-                                        <label for="al">Define Latitude and Longitude</label>
-                                        <input type="text" class="form-control" id="mLong">
+                                        <label for="alL">Latitude</label>
                                         <input type="text" class="form-control" id="mLat">
-                                        <div id="Cmap" style="width: 100%; height: 400px"></div>
+                                        <label for="alLg">Longitude</label>
+                                        <input type="text" class="form-control" id="mLong">
+                                        <label for="alM">Select Location</label>
+                                        <div id="Cmap" style="width: 100%; height: 300px"></div>
+
+
 
                                     </div>
 
