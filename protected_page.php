@@ -15,6 +15,7 @@ sec_session_start();
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAnFhZog7gFgXBi79GWVops8broQb6Hovw"></script>
+        
         <script>
             function initialize() {
                 var mapProp = {
@@ -126,7 +127,7 @@ while ($row = $result->fetch_assoc()) {
         </script>
     </head>
 
-    <body onload="initialize()" style="height: 100%;">
+    <body onload="initialize(); viewdata();" style="height: 100%;">
         <?php if (login_check($mysqli) == true) : ?>
 
             <div class="container-fluid">
@@ -157,24 +158,8 @@ while ($row = $result->fetch_assoc()) {
             <div class="tab-content"  style="height: 80%;">
                 <div class="tab-pane active" id="panel-missions">
                     <div class="container-fluid" style="height: 80%;">
-                        <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
-
-
-
-                            <table class="table table-hover table-condensed">
-                                <?php
-                                displayMissionList($mysqli);
-                                ?>
-
-
-                            </table>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#misionCreatePop">Create Mission</button>
-
-
-                                <button type="button" class="btn btn-primary">Display</button>
-                                <button type="button" class="btn btn-success">Success</button>
-                            </div>
+                        <div id="info"></div>
+                        <div id="missiondiplayer" class="col-md-12 column" style="background-color:lavender;height: 80%;" > 
                         </div>
                         <div class="col-md-12 column" >
                             <h2>Listed Missions</h2>
@@ -195,7 +180,7 @@ while ($row = $result->fetch_assoc()) {
                                 <form>
                                     <div class="form-group">
                                         <label for="nm">Mission Name</label>
-                                        <input type="text" class="form-control" id="nm" required>
+                                        <input type="text" class="form-control" id="missionN" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="sel1">Select a Team For the Mission</label>
@@ -214,7 +199,7 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="form-group">
                                         <label for="pn">Mission Details</label>
-                                        <input type="text" class="form-control" id="pn" required>
+                                        <input type="text" class="form-control" id="missionDt" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="alL">Latitude</label>
@@ -227,14 +212,15 @@ while ($row = $result->fetch_assoc()) {
 
 
                                     </div>
+                                      <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" id="CreateMission" class="btn btn-primary">Save changes</button>
+                            </div>
 
                                 </form>
 
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" id="save" class="btn btn-primary">Save changes</button>
-                            </div>
+                          
                         </div>
                     </div>
                 </div>   
@@ -312,5 +298,76 @@ while ($row = $result->fetch_assoc()) {
                 <span class="error">You are not authorized to access this page.</span> Please <a href="index.php">login</a>.
             </p>
         <?php endif; ?>
+    <script type="text/javascript">
+        // AJAXs
+    function viewdata(){
+       $.ajax({
+	   type: "GET",
+	   url: "./phps/displayMission.php"
+      }).done(function( data ) {
+	  $('#missiondiplayer').html(data);
+         
+      });
+    }
+    $('#CreateMission').click(function(){
+	
+	var missionName = $('#missionN').val();
+	var teamID = $('#teamid').val();
+	var missionDetails = $('#missionDt').val();
+	var latitude = $('#mLat').val();
+        var longitude = $('#mLong').val(); 
+	
+	var datas="missionN="+missionName+"&teamid="+teamID+"&missionD="+missionDetails+"&mLat="+latitude+"&mLong="+longitude;
+      
+	$.ajax({
+	   type: "POST",
+	   url: "./phps/create_mission.php",
+	   data: datas
+	}).done(function( data ) {
+	  $('#info').html(data);
+          viewdata();
+	});
+    });
+    function updatedata(str){
+	
+	var id = str;
+	var nm = $('#nm'+str).val();
+	var gd = $('#gd'+str).val();
+	var pn = $('#pn'+str).val();
+	var al = $('#al'+str).val();
+	
+	var datas="nm="+nm+"&gd="+gd+"&pn="+pn+"&al="+al;
+      
+	$.ajax({
+	   type: "POST",
+	   url: "php/updatedata.php?id="+id,
+	   data: datas
+	}).done(function( data ) {
+	  $('#info').html(data);
+	  viewdata();
+	});
+    }
+    function deletedata(str){
+	
+	var id = str;
+      
+	$.ajax({
+	   type: "GET",
+	   url: "php/deletedata.php?id="+id
+	}).done(function( data ) {
+	  $('#info').html(data);
+	  viewdata();
+	});
+    }
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
     </body>
 </html>

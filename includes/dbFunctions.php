@@ -134,11 +134,10 @@ function displayMissionList($mysq) {
         echo "<td>" . $row['TeamName'] . "  </td>";
         echo "<td>" . $row['latitude'] . "  </td>";
         echo "<td>" . $row['longitude'] . "  </td>";
-        echo "<td>" . $row['longitude'] . "  </td>";
         echo "<td>" . $row['time'] . "  </td>";
         echo "<td>" . $row['details'] . "  </td>";
 
-        echo "<td><a href='mission.php?delete=" . $row['id'] . "'><button type='button' class='btn btn-danger btn-xs'>Delete</button></a> - <a href='mission.php?edit=" . $row['id'] . "'><button type='button' class='btn btn-warning btn-xs'>Update</button></a></td>";
+        echo "<td><a href='mission.php?delete=" . $row['id'] . "'><button type='button' class='btn btn-danger btn-xs'>Delete</button></a> - <a href='mission.php?edit=" . $row['id'] . "'><button type='button' class='btn btn-warning btn-xs'>Update</button></a>-<button type='button' class='btn btn-primary btn-xs'>Display</button></td>";
         echo '</tr>';
 
         $t++;
