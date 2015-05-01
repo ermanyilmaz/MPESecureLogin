@@ -23,60 +23,78 @@ sec_session_start();
                     mapTypeId: google.maps.MapTypeId.SATELLITE
 
                 };
+                var mapCreate = {
+                    center: new google.maps.LatLng(39.9333, 32.8667),
+                    zoom: 5,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+
+
+                };
                 var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-                  <?php
-            // uncomment the 2 lines below to get real data from the db
-                   $sql = "SELECT * FROM mission";
-                    $result = $mysqli->query($sql);
-             
-            while($row = $result->fetch_assoc()){
-                $i=$row['id'];
+                var mapC = new google.maps.Map(document.getElementById("Cmap"), mapCreate);
+
+                $("#misionCreatePop").on("shown.bs.modal", function () {
+                    var currentCenter = mapC.getCenter();
+        
+                    google.maps.event.trigger(mapC, "resize");
+                    mapC.setCenter(currentCenter);
+                });
                 
-                echo "addMarker(new google.maps.LatLng(".$row['latitude'].", ".$row['longitude']."), map,".(string)$i.");";
-               
+<?php
+// uncomment the 2 lines below to get real data from the db
+$sql = "SELECT * FROM mission";
+$result = $mysqli->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $i = $row['id'];
+
+    echo "addMarker(new google.maps.LatLng(" . $row['latitude'] . ", " . $row['longitude'] . "), map," . (string) $i . ");";
+}
+?>
+
             }
-                ?>
-                    
-            }
-            function addMarker(latLng, maps,missid) {
+            function addMarker(latLng, maps, missid) {
                 //define an image
-           var image = 'http://maps.google.com/mapfiles/kml/pal5/icon44.png';
-            var marker = new google.maps.Marker({
-                position: latLng,
-                map: maps,
-                draggable: false, // enables drag & drop
-                animation: google.maps.Animation.DROP,
-                title: "Mission id : "+missid,
-                icon: image
-                
-            });
-             var infowindow = new google.maps.InfoWindow({
-                       
-                        content: "contentString"
-                });    
-                
-                    
-            google.maps.event.addListener(marker, 'click', function() {
-               
-                infowindow.open(maps,marker);
-                
-                setTimeout(function () { infowindow.close(); }, 4000);
-                
-            
-            });
-           
-           
-            
+                var image = 'http://maps.google.com/mapfiles/kml/pal5/icon44.png';
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: maps,
+                    draggable: false, // enables drag & drop
+                    animation: google.maps.Animation.DROP,
+                    title: "Mission id : " + missid,
+                    icon: image
 
-                
-            
-            
-            
+                });
+                var infowindow = new google.maps.InfoWindow({
+                    content: "contentString"
+                });
 
-            return marker;
-            
-        }
-            
+
+                google.maps.event.addListener(marker, 'click', function () {
+
+                    infowindow.open(maps, marker);
+
+                    setTimeout(function () {
+                        infowindow.close();
+                    }, 4000);
+
+
+                });
+
+
+
+
+
+
+
+
+
+                return marker;
+
+            }
+            $('#misionCreatePop').on('show.bs.modal', function () {
+        $('.modal-content').css('height',$( window ).height()*0.8);
+            });
         </script>
     </head>
 
@@ -109,7 +127,7 @@ sec_session_start();
 
 
             <div class="tab-content"  style="height: 80%;">
-                             <div class="tab-pane active" id="panel-missions">
+                <div class="tab-pane active" id="panel-missions">
                     <div class="container-fluid" style="height: 80%;">
                         <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
 
@@ -120,25 +138,84 @@ sec_session_start();
                                 displayMissionList($mysqli);
                                 ?>
 
-             
+
                             </table>
                             <div class="btn-group">
-                                <button type="button" class="btn btn-info">Create</button>
-                                <button type="button" class="btn btn-warning">Update</button>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#misionCreatePop">Create Mission</button>
+
 
                                 <button type="button" class="btn btn-primary">Display</button>
-
-
-                                <button type="button" class="btn btn-danger">Delete</button>  
                                 <button type="button" class="btn btn-success">Success</button>
                             </div>
                         </div>
                         <div class="col-md-12 column" >
-                            <h2>Mission Details</h2>
-                             <div id="googleMap" style="width:100%;height:500px;"></div>
+                            <h2>Listed Missions</h2>
+                            <div id="googleMap" style="width:100%;height:500px;"></div>
                         </div>
                     </div>
                 </div>
+                <!--                Create Button then after commings-->
+                <div class="modal fade" id="misionCreatePop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  >
+                    <div class="modal-dialog">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Create Mission</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <form>
+                                    <div class="form-group">
+                                        <label for="nm">Mission Name</label>
+                                        <input type="text" class="form-control" id="nm">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sel1">Select a Team For the Mission</label>
+                                        <select class="form-control" id="teamid">
+                                            <?php
+                                            $query1 = "select * from team";
+                                            $tableRows = $mysqli->query($query1);
+
+                                            while ($row = $tableRows->fetch_assoc()) {
+
+                                                echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pn">Mission Details</label>
+                                        <input type="text" class="form-control" id="pn">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="al">Define Latitude and Longitude</label>
+                                        <input type="text" class="form-control" id="mLong">
+                                        <input type="text" class="form-control" id="mLat">
+                                        <div id="Cmap" style="width: 100%; height: 400px"></div>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" id="save" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+
+
+
+
+
+
+
+
+
+
                 <div class="tab-pane" id="panel-teams">
                     <div class="container-fluid" style="height: 80%;">
                         <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
@@ -168,7 +245,7 @@ sec_session_start();
                         </div>
                     </div>
                 </div>
-                      <div class="tab-pane" id="panel-soldier">
+                <div class="tab-pane" id="panel-soldier">
                     <div class="container-fluid" style="height: 80%;">
                         <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
 
