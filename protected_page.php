@@ -203,9 +203,9 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="form-group">
                                         <label for="alL">Latitude</label>
-                                        <input type="text" class="form-control" id="mLat" required>
+                                        <input type="text" class="form-control" id="mLat" required disabled>
                                         <label for="alLg">Longitude</label>
-                                        <input type="text" class="form-control" id="mLong" required>
+                                        <input type="text" class="form-control" id="mLong" required disabled>
                                         <label for="alM">Select Location</label>
                                         <div id="Cmap" style="width: 100%; height: 300px"></div>
 
@@ -353,7 +353,7 @@ while ($row = $result->fetch_assoc()) {
       
 	$.ajax({
 	   type: "GET",
-	   url: "php/deletedata.php?id="+id
+	   url: "./phps/deleteMission.php?id="+id
 	}).done(function( data ) {
 	  $('#info').html(data);
 	  viewdata();
