@@ -12,6 +12,7 @@ sec_session_start();
         <title>Secure Login: Protected Page</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link href="./css/protected.css" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAnFhZog7gFgXBi79GWVops8broQb6Hovw"></script>
@@ -33,7 +34,7 @@ sec_session_start();
                 };
                 var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
                 var mapC = new google.maps.Map(document.getElementById("Cmap"), mapCreate);
-
+                
                 $("#misionCreatePop").on("shown.bs.modal", function () {
                     var currentCenter = mapC.getCenter();
 
@@ -121,9 +122,9 @@ while ($row = $result->fetch_assoc()) {
                 return marker;
 
             }
-            $('#misionCreatePop').on('show.bs.modal', function () {
-                $('.modal-content').css('height', $(window).height() * 0.8);
-            });
+//            $('#misionCreatePop').on('show.bs.modal', function () {
+//                $('.modal-content').css('height', $(window).height() * 0.8);
+//            });
         </script>
     </head>
 
@@ -226,8 +227,64 @@ while ($row = $result->fetch_assoc()) {
                 </div>   
 
 
+<!--               myMissionModalUpdate -->
+                    <div class="modal fade" id="myMissionUModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"aria-hidden="true">
+        <div class="modal-dialog" id="mapuid">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Edit Mission</h4>
+                </div>
+                <div class="modal-body">
 
+                    <form>
+                        <div class="form-group">
+                            <label for="nm">Mission Name :</label>
+                            <input type="hidden" class="form-control" id="Uid" value="">
+                            <input type="text" class="form-control" id="UMissionN" value="">
+                        </div>
+                        <div class="form-group">
+                                        <label for="sel1">Change Team For the Mission</label>
+                                        <select class="form-control" id="teamid" required >
+                                            <?php
+                                            
+                                            $queryt = "select * from team";// where name !='". $row['TeamName']."'";
+                                            $tableRowst = $mysqli->query($queryt);
 
+                                            while ($rowT = $tableRowst->fetch_assoc()) {
+                                                if($teamnameU== $rowT['name']){
+                                                echo '<option class="blueText" value="' . $rowT['id'] . '">' . $rowT['name'] . ' (Mission is assigned that team already)</option>';
+                                                }
+                                                else
+                                                    echo '<option value="' . $rowT['id'] . '">' . $rowT['name'] . '</option>';
+                                            }
+                                
+                                            ?>
+                                        </select>
+
+                                    </div>
+                        <div class="form-group">
+                            <label for="gd">Mission Details</label>
+                            <input type="text" class="form-control" id="UmissionDt" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="pn">Latitude</label>
+                            <input type="text" class="form-control" id="Ulat" value="" disabled="">
+                        
+                            <label for="al">Longitude</label>
+                            <input type="text" class="form-control" id="Ulong" value="" disabled="">
+                            <div id="Umap" style="width: 100%; height: 300px"></div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="updatedata('')" class="btn btn-primary">Update Mission</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -328,24 +385,79 @@ while ($row = $result->fetch_assoc()) {
           viewdata();
 	});
     });
-    function updatedata(str){
+    function updatedata(){
+
+	var id = $('#Uid').val();
+	var mn = $('#UMissionN').val();
+	var teid = $('#teamid').val();
+	var msd = $('#UmissionDt').val();
+	var lat = $('#Ulat').val();
+        var long = $('#Ulong').val();
 	
-	var id = str;
-	var nm = $('#nm'+str).val();
-	var gd = $('#gd'+str).val();
-	var pn = $('#pn'+str).val();
-	var al = $('#al'+str).val();
-	
-	var datas="nm="+nm+"&gd="+gd+"&pn="+pn+"&al="+al;
+	var datas="mn="+mn+"&teid="+teid+"&msd="+msd+"&long="+long+"&lat="+lat;
       
 	$.ajax({
 	   type: "POST",
-	   url: "php/updatedata.php?id="+id,
+	   url: "./phps/updateMission.php?id="+id,
 	   data: datas
 	}).done(function( data ) {
 	  $('#info').html(data);
 	  viewdata();
+          
 	});
+    }
+    function updatefill(str,miname,lat,long,dts){ //,miname,lat,long,dts
+        
+         document.getElementById("Uid").value = str;
+         document.getElementById("UMissionN").value = miname;
+         document.getElementById("UmissionDt").value = dts;
+         document.getElementById("Ulat").value = lat;
+         document.getElementById("Ulong").value = long;
+           var mapUpdate = {
+                    center: new google.maps.LatLng(lat,long),
+                    zoom: 5,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+
+
+                };
+                latn=google.maps.LatLng(lat,long);
+                var mapU = new google.maps.Map(document.getElementById("Umap"), mapUpdate);
+                    $("#myMissionUModal").on("shown.bs.modal", function () {
+                    var currentCenter = mapU.getCenter();
+
+                    google.maps.event.trigger(mapU, "resize");
+                    mapU.setCenter(currentCenter);
+                });
+                //clicking the Create Mission Map
+                var marker;
+                //listener to drad
+                 
+
+                google.maps.event.addListener(mapU, "click", function (e) {
+
+                    //lat and lng is available in e object
+                    var latLng = e.latLng;
+
+                    document.getElementById("Ulat").value = latLng.lat();
+                    document.getElementById("Ulong").value = latLng.lng();
+                    if (marker) {
+                        marker.setPosition(latLng);
+                        google.maps.event.addListener(marker, 'dragend', function (event) {
+                            document.getElementById("Ulat").value = this.getPosition().lat();
+                            document.getElementById("Ulong").value = this.getPosition().lng();
+                        });
+                    }
+                    else {
+                        marker = new google.maps.Marker({
+                            map: mapU,
+                            position: latLng,
+                            draggable: true
+
+                        });
+                    }
+
+                });
+                    
     }
     function deletedata(str){
 	
@@ -360,7 +472,7 @@ while ($row = $result->fetch_assoc()) {
 	});
     }
     </script>
-    
+
     
     
     
