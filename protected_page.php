@@ -128,7 +128,7 @@ while ($row = $result->fetch_assoc()) {
         </script>
     </head>
 
-    <body onload="initialize(); viewdata();" style="height: 100%;">
+    <body onload="initialize(); viewdata(); displayTeam(); soldierDisplay();" style="height: 100%;">
         <?php if (login_check($mysqli) == true) : ?>
 
             <div class="container-fluid">
@@ -293,28 +293,11 @@ while ($row = $result->fetch_assoc()) {
 
                 <div class="tab-pane" id="panel-teams">
                     <div class="container-fluid" style="height: 80%;">
-                        <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
-
-
-
-                            <table class="table table-hover table-condensed">
-                                <?php
-                                displaytable($mysqli, "team");
-                                ?>
-                            </table>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-info">Create</button>
-                                <button type="button" class="btn btn-warning">Update</button>
-
-                                <button type="button" class="btn btn-primary">Display</button>
-
-
-                                <button type="button" class="btn btn-danger">Delete</button>  
-                                <button type="button" class="btn btn-success">Success</button>
-                            </div>
+                        <div class="col-md-12 column" id="teamView" style="background-color:lavender;height: 80%;" >
+<!--                         // Ajax Will be Update here-->
                         </div>
-                        <div class="col-md-12 column" >
-                            <h2>Team Details</h2>
+                        <div id="teamDetailed" class="col-md-12 column" >
+                            
 
 
                         </div>
@@ -322,25 +305,16 @@ while ($row = $result->fetch_assoc()) {
                 </div>
                 <div class="tab-pane" id="panel-soldier">
                     <div class="container-fluid" style="height: 80%;">
-                        <div class="col-md-12 column" style="background-color:lavender;height: 80%;" >
+                        <div class="col-md-12 column" id="soldierDisplay" style="background-color:lavender;height: 80%;" >
 
 
 
-                            <table class="table table-hover table-condensed">
-                                <?php
-                                displaySoldierList($mysqli);
-                                ?>
-                            </table>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-info">Create</button>
-                                <button type="button" class="btn btn-warning">Update</button>
-
-                                <button type="button" class="btn btn-primary">Display</button>
-
-
-                                <button type="button" class="btn btn-danger">Delete</button>  
-                                <button type="button" class="btn btn-success">Success</button>
-                            </div>
+<!--                            <table class="table table-hover table-condensed">
+                                //<?php
+//                                displaySoldierList($mysqli);
+                                    ?>
+                            </table>-->
+                            
                         </div>
                         <div class="col-md-12 column" >
                             <h2>Soldier</h2>
@@ -365,6 +339,35 @@ while ($row = $result->fetch_assoc()) {
 	  $('#missiondiplayer').html(data);
          
       });
+    }
+    function displayTeam(){
+         $.ajax({
+	   type: "GET",
+	   url: "./phps/displayteam.php"
+      }).done(function( data ) {
+	  $('#teamView').html(data);
+         
+      });
+    }
+        function soldierDisplay(){
+         $.ajax({
+	   type: "GET",
+	   url: "./phps/displaySoldier.php"
+      }).done(function( data ) {
+	  $('#soldierDisplay').html(data);
+         
+      });
+    }
+    function teammatelist(teamid){
+	var id = teamid;
+      
+	$.ajax({
+	   type: "GET",
+	   url: "./phps/listTeammates.php?id="+id
+	}).done(function( data ) {
+	  $('#teamDetailed').html(data);
+	});
+        
     }
     $('#CreateMission').click(function(){
 	
@@ -407,55 +410,59 @@ while ($row = $result->fetch_assoc()) {
 	});
     }
     function updatefill(str,miname,lat,long,dts){ //,miname,lat,long,dts
-        
+           
          document.getElementById("Uid").value = str;
          document.getElementById("UMissionN").value = miname;
          document.getElementById("UmissionDt").value = dts;
          document.getElementById("Ulat").value = lat;
          document.getElementById("Ulong").value = long;
+         latn=google.maps.LatLng(lat,long);
+        
            var mapUpdate = {
                     center: new google.maps.LatLng(lat,long),
-                    zoom: 5,
+                    zoom: 4,
                     mapTypeId: google.maps.MapTypeId.SATELLITE
 
 
                 };
-                latn=google.maps.LatLng(lat,long);
                 var mapU = new google.maps.Map(document.getElementById("Umap"), mapUpdate);
-                    $("#myMissionUModal").on("shown.bs.modal", function () {
-                    var currentCenter = mapU.getCenter();
+                   
+                
+                var marker= new google.maps.Marker({
+                    position: latn,
+                    map: mapU,
+                    draggable: true, // enables drag & drop
+                    animation: google.maps.Animation.DROP,
+                    title: "Mission Name : " + miname
+                    
 
-                    google.maps.event.trigger(mapU, "resize");
-                    mapU.setCenter(currentCenter);
                 });
-                //clicking the Create Mission Map
-                var marker;
-                //listener to drad
+               
+              
                  
 
                 google.maps.event.addListener(mapU, "click", function (e) {
-
+                    
                     //lat and lng is available in e object
                     var latLng = e.latLng;
 
                     document.getElementById("Ulat").value = latLng.lat();
                     document.getElementById("Ulong").value = latLng.lng();
-                    if (marker) {
+                   
                         marker.setPosition(latLng);
                         google.maps.event.addListener(marker, 'dragend', function (event) {
                             document.getElementById("Ulat").value = this.getPosition().lat();
                             document.getElementById("Ulong").value = this.getPosition().lng();
                         });
-                    }
-                    else {
-                        marker = new google.maps.Marker({
-                            map: mapU,
-                            position: latLng,
-                            draggable: true
+                   
+              
 
-                        });
-                    }
+                });
+                 $("#myMissionUModal").on("shown.bs.modal", function () {
+                    var currentCenter = mapU.getCenter();
 
+                    google.maps.event.trigger(mapU, "resize");
+                    mapU.setCenter(currentCenter);
                 });
                     
     }
