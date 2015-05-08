@@ -49,8 +49,8 @@ while ($row = $tableRows->fetch_assoc()) {
     echo "<td>" . $row['MissionName'] . "  </td>";
     echo "<td>" . $row['Leader'] . "  </td>";
     echo "<td>" . $row['TeamName'] . "  </td>";
-    echo "<td>" . $row['latitude'] . "  </td>";
-    echo "<td>" . $row['longitude'] . "  </td>";
+    echo "<td>" . substr($row['latitude'], 0, 7) . "  </td>";
+    echo "<td>" . substr($row['longitude'], 0, 7) . "  </td>";
     echo "<td>" . $row['time'] . "  </td>";
     echo "<td>" . $row['details'] . "  </td>";
 

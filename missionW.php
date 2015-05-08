@@ -16,9 +16,11 @@ $row = $tableRows->fetch_assoc();
   <meta charset="utf-8">
   <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAnFhZog7gFgXBi79GWVops8broQb6Hovw"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+ 
+        <script src="js/jquery.min.js"></script>
+        
+        <script src="js/bootstrap.min.js"></script>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
         <?php if (login_check($mysqli) == true) : ?>
@@ -36,6 +38,8 @@ $row = $tableRows->fetch_assoc();
 		<div class="col-md-12 column">
 			<h3>
 				<?php echo $row['name'];?>
+                                <?php echo $row['latitude'];?>
+                                <?php echo $row['longitude'];?>
 			</h3>
 			<div class="row clearfix">
                             
@@ -49,18 +53,23 @@ $row = $tableRows->fetch_assoc();
                 <span class="error">You are not authorized to access this page.</span> Please <a href="index.php">login</a>.
             </p>
         <?php endif; ?>
+            
 </body>
+
+
 <script>
 var markers = new Array();    
     var map;
 function initialize() {
   var mapProp = {
-    center:new google.maps.LatLng(30,30),
-    zoom:3,
-    mapTypeId:google.maps.MapTypeId.ROADMAP
+    center:new google.maps.LatLng(<?php echo $row['latitude'];?>,<?php echo $row['longitude'];?>),
+    zoom:7,
+    mapTypeId:google.maps.MapTypeId.SATELLITE
   };
   map=new google.maps.Map(document.getElementById("mapw"),mapProp);
 }
+<?PHP $i=$row['id'];
+echo "addMarker(new google.maps.LatLng(" . $row['latitude'] . ", " . $row['longitude'] . "), map," . (string) $i . ",'" . $row['details'] . "');"; ?>
 google.maps.event.addDomListener(window, 'load', initialize);
 
 var myVar=setInterval(function () {myTimer();}, 1500);
@@ -89,7 +98,7 @@ function myTimer() {
 		}
 	});
 }
-
+        
 
         function movePoint(lat, lng, id) {
      //       console.log(id+" moved to "+lat);
@@ -101,8 +110,10 @@ function myTimer() {
         function addPoint(thismap, lat, lng, name,id) {   
             console.log(name+" added to "+lat);
             var thisLatlng = new google.maps.LatLng(lat, lng);
+            var image = 'iconset/soldier.png';
             var marker = new google.maps.Marker({
-                position: thisLatlng
+                position: thisLatlng,
+                icon: image
             });
             var infowindow = new google.maps.InfoWindow({
                     content: name
@@ -119,6 +130,48 @@ function myTimer() {
             marker.setMap(thismap);
             markers[id] = marker;
         }
+        
+                    var cons = "default";
+            function addMarker(latLng, maps, missid, details) {
+                //define an image
+                cons = details;
+                var image = 'http://maps.google.com/mapfiles/kml/pal5/icon44.png';
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: maps,
+                    draggable: false, // enables drag & drop
+                    animation: google.maps.Animation.DROP,
+                    title: "Mission id : " + missid,
+                    icon: image
+
+                });
+                var infowindow = new google.maps.InfoWindow({
+                    content: cons
+                });
+
+
+                google.maps.event.addListener(marker, 'click', function () {
+
+                    infowindow.open(maps, marker);
+
+                    setTimeout(function () {
+                        infowindow.close();
+                    }, 4000);
+
+
+                });
+
+
+
+
+
+
+
+
+
+                return marker;
+
+            }
 		
 		
 </script>

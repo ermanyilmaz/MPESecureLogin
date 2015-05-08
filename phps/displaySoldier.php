@@ -1,7 +1,7 @@
 <?php
 include_once '../includes/db_connect.php';
 
-$query1 = "select soldier.id as id, soldier.name as SoldierName, rank.name as Rank from soldier,rank where rank.id= soldier.rankID";
+$query1 = "select soldier.id as id,soldier.serial as serial, soldier.name as SoldierName, rank.name as Rank from soldier,rank where rank.id= soldier.rankID";
     $tableRows = $mysqli->query($query1);
 
 
@@ -34,13 +34,22 @@ $query1 = "select soldier.id as id, soldier.name as SoldierName, rank.name as Ra
         echo "<td>" . $row['SoldierName'] . "  </td>";
         echo "<td> <img src='ranks/$rankimg.png' /> " . $row['Rank'] . "  </td>";
         //echo "<img src='$content' />";
+        $sid=$row['id'];
+        $sname=$row['SoldierName'];
+        $serial =$row['serial'];
+       
 
-        echo "<td><a href='soldier.php?delete=" . $row['id'] . "'><button type='button' class='btn btn-danger btn-xs'>Delete</button> </a> - <a href='mission.php?edit=" . $row['id'] . "'>  <button type='button' class='btn btn-warning btn-xs'>Update</button></a></td>";
-        echo '</tr>';
+       echo "<td><button type='button' onclick='updateSoldier(\"$sid\",\"$sname\",\"$rankimg\",\"$serial\")' class='btn btn-warning btn-xs' data-toggle='modal' data-target='#SoldierupdatePop'>Update</button> &nbsp";
+       
+        echo '</td></tr>';
 
         $t++;
     }
     echo '</tbody></table>';
+    echo ' <div class="btn-group">
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#SoldierCreatePop">Create Soldier</button>
+                                
+                            </div>';
                            
 
 ?>

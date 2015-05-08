@@ -1,5 +1,5 @@
 <?php
-include "config.php";
+
 include_once '../includes/db_connect.php';
 if(isset($_GET['id'])){
 $stmt = $mysqli->prepare("delete from mission where id=?");
