@@ -41,11 +41,11 @@ while ($row = $tableRows->fetch_assoc()) {
     }
 
     $idstr = "" . $row['id'];
-    $miname=$row['MissionName'];
-    $tname= $row['TeamName'];
+    $miname = $row['MissionName'];
+    $tname = $row['TeamName'];
     $lat = $row['latitude'];
-    $long = $row['longitude'] ;
-    $dts=$row['details'];
+    $long = $row['longitude'];
+    $dts = $row['details'];
     echo "<td>" . $row['MissionName'] . "  </td>";
     echo "<td>" . $row['Leader'] . "  </td>";
     echo "<td>" . $row['TeamName'] . "  </td>";
@@ -54,10 +54,24 @@ while ($row = $tableRows->fetch_assoc()) {
     echo "<td>" . $row['time'] . "  </td>";
     echo "<td>" . $row['details'] . "  </td>";
 
-    echo "<td><button type='button' onclick='deletedata(\"$idstr\")' class='btn btn-danger btn-xs'>Delete</button> &nbsp"; ?>
-<button type='button' <?php echo "onclick= 'updatefill(\"$idstr\",\"$miname\",\"$lat\",\"$long\",\"$dts\")'"; //,$miname,$lat,$long,$dts?> class='btn btn-warning btn-xs' data-toggle="modal" data-target="#myMissionUModal">Update</button> 
+    echo "<td><button type='button' onclick='deletedata(\"$idstr\")' class='btn btn-danger btn-xs'>Delete</button> &nbsp";
+    ?>
+    <button type='button' <?php echo "onclick= 'updatefill(\"$idstr\",\"$miname\",\"$lat\",\"$long\",\"$dts\")'"; //,$miname,$lat,$long,$dts?> class='btn btn-warning btn-xs' data-toggle="modal" data-target="#myMissionUModal">Update</button> 
     <?php
-    echo "<button type='button' class='btn btn-primary btn-xs'>Display</button></td>";
+    
+    $situationSQL = $mysqli->query("select * from location where missionID=$idstr and status='END'");
+    if ((mysqli_num_rows($situationSQL) > 0)) {
+        echo "<button type='button' class='btn btn-primary disabled btn-xs'>Mission Ended</button></td>";
+    } else {
+        $situationSQL = $mysqli->query("select * from location where missionID=$idstr and status='START'");
+        if (mysqli_num_rows($situationSQL) > 0) {
+            echo "<a href='missionW.php?id=" . $row['id'] . "'><button type='button' class='btn btn-primary btn-xs'>Watch Mission</button></a></td>";
+            //<a href='mission.php?edit=" . $row['id'] . "'>  <button type='button' class='btn btn-warning btn-xs'>Update</button></a>
+        }  else {
+            echo "<button type='button' class='btn btn-primary disabled btn-xs'>Not Started</button></td>";
+        }
+    }
+
     ?>
 
     <?php
@@ -70,8 +84,6 @@ echo ' <div class="btn-group">
                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#misionCreatePop">Create Mission</button>
                                 
                             </div>';
-                           
-
 ?>
 
 

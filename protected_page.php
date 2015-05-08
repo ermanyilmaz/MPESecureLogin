@@ -17,115 +17,7 @@ sec_session_start();
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAnFhZog7gFgXBi79GWVops8broQb6Hovw"></script>
         
-        <script>
-            function initialize() {
-                var mapProp = {
-                    center: new google.maps.LatLng(39.9333, 32.8667),
-                    zoom: 5,
-                    mapTypeId: google.maps.MapTypeId.SATELLITE
 
-                };
-                var mapCreate = {
-                    center: new google.maps.LatLng(39.9333, 32.8667),
-                    zoom: 5,
-                    mapTypeId: google.maps.MapTypeId.SATELLITE
-
-
-                };
-                var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-                var mapC = new google.maps.Map(document.getElementById("Cmap"), mapCreate);
-                
-                $("#misionCreatePop").on("shown.bs.modal", function () {
-                    var currentCenter = mapC.getCenter();
-
-                    google.maps.event.trigger(mapC, "resize");
-                    mapC.setCenter(currentCenter);
-                });
-                //clicking the Create Mission Map
-                var marker;
-                //listener to drad
-
-                google.maps.event.addListener(mapC, "click", function (e) {
-
-                    //lat and lng is available in e object
-                    var latLng = e.latLng;
-
-                    document.getElementById("mLat").value = latLng.lat();
-                    document.getElementById("mLong").value = latLng.lng();
-                    if (marker) {
-                        marker.setPosition(latLng);
-                        google.maps.event.addListener(marker, 'dragend', function (event) {
-                            document.getElementById("mLat").value = this.getPosition().lat();
-                            document.getElementById("mLong").value = this.getPosition().lng();
-                        });
-                    }
-                    else {
-                        marker = new google.maps.Marker({
-                            map: mapC,
-                            position: latLng,
-                            draggable: true
-
-                        });
-                    }
-
-                });
-
-<?php
-// uncomment the 2 lines below to get real data from the db
-$sql = "SELECT * FROM mission";
-$result = $mysqli->query($sql);
-
-while ($row = $result->fetch_assoc()) {
-    $i = $row['id'];
-
-    echo "addMarker(new google.maps.LatLng(" . $row['latitude'] . ", " . $row['longitude'] . "), map," . (string) $i . ");";
-}
-?>
-
-            }
-            function addMarker(latLng, maps, missid) {
-                //define an image
-                var image = 'http://maps.google.com/mapfiles/kml/pal5/icon44.png';
-                var marker = new google.maps.Marker({
-                    position: latLng,
-                    map: maps,
-                    draggable: false, // enables drag & drop
-                    animation: google.maps.Animation.DROP,
-                    title: "Mission id : " + missid,
-                    icon: image
-
-                });
-                var infowindow = new google.maps.InfoWindow({
-                    content: "contentString"
-                });
-
-
-                google.maps.event.addListener(marker, 'click', function () {
-
-                    infowindow.open(maps, marker);
-
-                    setTimeout(function () {
-                        infowindow.close();
-                    }, 4000);
-
-
-                });
-
-
-
-
-
-
-
-
-
-                return marker;
-
-            }
-//            $('#misionCreatePop').on('show.bs.modal', function () {
-//                $('.modal-content').css('height', $(window).height() * 0.8);
-//            });
-        </script>
     </head>
 
     <body onload="initialize(); viewdata(); displayTeam(); soldierDisplay();" style="height: 100%;">
@@ -280,7 +172,7 @@ while ($row = $result->fetch_assoc()) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" onclick="updatedata('')" class="btn btn-primary">Update Mission</button>
+                    <button type="button" onclick="updatedata(''); initialize();" class="btn btn-primary">Update Mission</button>
                 </div>
             </div>
         </div>
@@ -416,7 +308,7 @@ while ($row = $result->fetch_assoc()) {
          document.getElementById("UmissionDt").value = dts;
          document.getElementById("Ulat").value = lat;
          document.getElementById("Ulong").value = long;
-         latn=google.maps.LatLng(lat,long);
+         latn=new google.maps.LatLng(lat,long);
         
            var mapUpdate = {
                     center: new google.maps.LatLng(lat,long),
@@ -437,8 +329,9 @@ while ($row = $result->fetch_assoc()) {
                     
 
                 });
-               
-              
+
+                                  marker.setPosition(latn);
+
                  
 
                 google.maps.event.addListener(mapU, "click", function (e) {
@@ -449,13 +342,15 @@ while ($row = $result->fetch_assoc()) {
                     document.getElementById("Ulat").value = latLng.lat();
                     document.getElementById("Ulong").value = latLng.lng();
                    
-                        marker.setPosition(latLng);
                         google.maps.event.addListener(marker, 'dragend', function (event) {
                             document.getElementById("Ulat").value = this.getPosition().lat();
                             document.getElementById("Ulong").value = this.getPosition().lng();
+                                              //  marker.setPosition(latLng);
+
                         });
                    
-              
+                                  marker.setPosition(latLng);
+
 
                 });
                  $("#myMissionUModal").on("shown.bs.modal", function () {
@@ -463,6 +358,7 @@ while ($row = $result->fetch_assoc()) {
 
                     google.maps.event.trigger(mapU, "resize");
                     mapU.setCenter(currentCenter);
+                    marker.setMap(mapU);                        
                 });
                     
     }
@@ -479,7 +375,117 @@ while ($row = $result->fetch_assoc()) {
 	});
     }
     </script>
+        <script>
+            function initialize() {
+                var mapProp = {
+                    center: new google.maps.LatLng(39.9333, 32.8667),
+                    zoom: 5,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
 
+                };
+                var mapCreate = {
+                    center: new google.maps.LatLng(39.9333, 32.8667),
+                    zoom: 5,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+
+
+                };
+                var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+                var mapC = new google.maps.Map(document.getElementById("Cmap"), mapCreate);
+                
+                $("#misionCreatePop").on("shown.bs.modal", function () {
+                    var currentCenter = mapC.getCenter();
+
+                    google.maps.event.trigger(mapC, "resize");
+                    mapC.setCenter(currentCenter);
+                });
+                //clicking the Create Mission Map
+                var marker;
+                //listener to drad
+
+                google.maps.event.addListener(mapC, "click", function (e) {
+
+                    //lat and lng is available in e object
+                    var latLng = e.latLng;
+
+                    document.getElementById("mLat").value = latLng.lat();
+                    document.getElementById("mLong").value = latLng.lng();
+                    if (marker) {
+                        marker.setPosition(latLng);
+                        google.maps.event.addListener(marker, 'dragend', function (event) {
+                            document.getElementById("mLat").value = this.getPosition().lat();
+                            document.getElementById("mLong").value = this.getPosition().lng();
+                        });
+                    }
+                    else {
+                        marker = new google.maps.Marker({
+                            map: mapC,
+                            position: latLng,
+                            draggable: true
+
+                        });
+                    }
+
+                });
+
+<?php
+// uncomment the 2 lines below to get real data from the db
+$sql = "SELECT * FROM mission";
+$result = $mysqli->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $i = $row['id'];
+    
+    echo "addMarker(new google.maps.LatLng(" . $row['latitude'] . ", " . $row['longitude'] . "), map," . (string) $i . ",'".$row['details']."');";
+}
+?>
+
+            }
+            var cons = "default";
+            function addMarker(latLng, maps, missid,details) {
+                //define an image
+                cons = details;
+                var image = 'http://maps.google.com/mapfiles/kml/pal5/icon44.png';
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: maps,
+                    draggable: false, // enables drag & drop
+                    animation: google.maps.Animation.DROP,
+                    title: "Mission id : " + missid,
+                    icon: image
+                    
+                });
+                var infowindow = new google.maps.InfoWindow({
+                    content: cons
+                });
+
+
+                google.maps.event.addListener(marker, 'click', function () {
+
+                    infowindow.open(maps, marker);
+
+                    setTimeout(function () {
+                        infowindow.close();
+                    }, 4000);
+
+
+                });
+
+
+
+
+
+
+
+
+
+                return marker;
+
+            }
+//            $('#misionCreatePop').on('show.bs.modal', function () {
+//                $('.modal-content').css('height', $(window).height() * 0.8);
+//            });
+        </script>
     
     
     
